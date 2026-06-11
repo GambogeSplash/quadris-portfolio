@@ -5,7 +5,7 @@ import { PageTracker, MediaReveal } from "./nav";
 import "./case-study.css";
 
 export const metadata: Metadata = {
-  title: "Patch — Case Study",
+  title: "Patch Case Study",
   description: "Process notes behind the Patch rebuild.",
 };
 
@@ -47,7 +47,7 @@ export default function CaseStudy() {
       <header className="cs-header">
         <Link href="/" className="cs-back" aria-label="Back to home">
           <ArrowLeft />
-          <span>Home</span>
+          <span className="cs-wordmark">Quadri</span>
         </Link>
         <span style={{ color: "#969696" }}>Case Study</span>
       </header>

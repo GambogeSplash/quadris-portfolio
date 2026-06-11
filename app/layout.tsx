@@ -1,20 +1,17 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Patch - System",
-  description:
-    "Brand and product design for Patch, an app blocker with a body.",
+  title: "Quadri Agboulaje, Product Designer",
+  description: "Portfolio of Quadri Agboulaje, product designer.",
   openGraph: {
     type: "website",
-    title: "Patch - System",
-    description:
-      "Brand and product design for Patch, an app blocker with a body.",
+    title: "Quadri Agboulaje, Product Designer",
+    description: "Portfolio of Quadri Agboulaje, product designer.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Patch - System",
-    description:
-      "Brand and product design for Patch, an app blocker with a body.",
+    title: "Quadri Agboulaje, Product Designer",
+    description: "Portfolio of Quadri Agboulaje, product designer.",
   },
 };
 
