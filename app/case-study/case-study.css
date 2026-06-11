@@ -1,0 +1,130 @@
+/* Case study page styles. Same tokens as the rail: ABCCameraPlain 13px, gray #969696. */
+
+.cs-page {
+  min-height: 100svh;
+  background: #fff;
+  color: #000;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.cs-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px;
+}
+
+.cs-header a:hover {
+  color: #969696;
+}
+
+.cs-body {
+  max-width: 688px;
+  margin: 0 auto;
+  padding: 96px 16px 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 64px;
+}
+
+.cs-title {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cs-title h1 {
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.cs-intro {
+  max-width: 480px;
+  text-wrap: balance;
+}
+
+.cs-meta {
+  display: flex;
+  gap: 32px;
+  color: #969696;
+}
+
+.cs-meta div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cs-meta span:first-child {
+  color: #000;
+}
+
+.cs-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cs-section h2 {
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.cs-section p {
+  max-width: 480px;
+  color: #969696;
+  text-wrap: balance;
+}
+
+.cs-media {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.cs-media img,
+.cs-media video {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.cs-media-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+@media (min-width: 768px) {
+  .cs-media-row {
+    flex-direction: row;
+  }
+  .cs-media-row > * {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+.cs-caption {
+  color: #969696;
+  font-size: 13px;
+  line-height: 1.3;
+  max-width: 288px;
+}
+
+.cs-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: #969696;
+  border-top: 1px solid #e5e5e5;
+  padding-top: 16px;
+}
+
+.cs-footer a {
+  color: #000;
+}
+
+.cs-footer a:hover {
+  color: #969696;
+}

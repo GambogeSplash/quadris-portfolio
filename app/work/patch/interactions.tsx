@@ -6,7 +6,76 @@
  * wheel takeover, pointer drag) with the WebGL curtain on top.
  */
 import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { mountCurtain, applyRailTransform } from "./curtain";
+
+const CASE_STUDY_PATH = "/case-study";
+
+// Media tiles link to the case study. A cursor-following label makes the
+// affordance explicit on desktop; on touch a plain tap navigates.
+function setupTileLinks(root: HTMLElement, navigate: (path: string) => void) {
+  const pill = document.createElement("div");
+  pill.textContent = "View case study";
+  pill.style.cssText = [
+    "position:fixed",
+    "top:0",
+    "left:0",
+    "z-index:40",
+    "pointer-events:none",
+    "background:#000",
+    "color:#fff",
+    "font-size:13px",
+    "line-height:1",
+    "padding:8px 12px",
+    "border-radius:999px",
+    "white-space:nowrap",
+    "opacity:0",
+    "transition:opacity .15s ease-out",
+  ].join(";");
+  document.body.appendChild(pill);
+
+  let overTile = false;
+  const anchorAt = (target: EventTarget | null) =>
+    target instanceof Element ? target.closest<HTMLElement>("[data-media-anchor]") : null;
+
+  const onMove = (e: PointerEvent) => {
+    if (e.pointerType === "touch") return;
+    const anchor = anchorAt(e.target);
+    const grabbing = document.body.style.cursor === "grabbing";
+    overTile = !!anchor && !grabbing;
+    pill.style.opacity = overTile ? "1" : "0";
+    if (overTile) {
+      pill.style.transform = `translate3d(${e.clientX + 14}px, ${e.clientY + 14}px, 0)`;
+    }
+    if (anchor && !grabbing) anchor.style.cursor = "pointer";
+  };
+  const onLeave = () => {
+    overTile = false;
+    pill.style.opacity = "0";
+  };
+  const onClick = (e: MouseEvent) => {
+    const anchor = anchorAt(e.target);
+    if (!anchor) return;
+    // A drag that travelled past the threshold should not read as a click.
+    if (suppressNextClick) return;
+    e.preventDefault();
+    navigate(CASE_STUDY_PATH);
+  };
+
+  window.addEventListener("pointermove", onMove, { passive: true });
+  document.addEventListener("pointerleave", onLeave);
+  root.addEventListener("click", onClick);
+  return () => {
+    window.removeEventListener("pointermove", onMove);
+    document.removeEventListener("pointerleave", onLeave);
+    root.removeEventListener("click", onClick);
+    pill.remove();
+  };
+}
+
+// Set by the rail's drag handler so a completed drag swallows the click that
+// the browser fires after pointerup.
+let suppressNextClick = false;
 
 const FADE = ["transition-opacity", "duration-300", "ease-out"];
 
@@ -182,6 +251,12 @@ function setupRail(section: HTMLElement, track: HTMLElement) {
     lastX = e.clientX;
   };
   const onPointerUp = () => {
+    if (dragging) {
+      suppressNextClick = true;
+      setTimeout(() => {
+        suppressNextClick = false;
+      }, 0);
+    }
     down = false;
     dragging = false;
     document.body.style.cursor = "";
@@ -214,10 +289,12 @@ function setupRail(section: HTMLElement, track: HTMLElement) {
 }
 
 export default function Interactions() {
+  const router = useRouter();
   useEffect(() => {
     const main = document.querySelector("main");
     if (!main) return;
     const cleanupReveal = setupMediaReveal(main);
+    const cleanupLinks = setupTileLinks(main, (path) => router.push(path));
 
     const section = main.querySelector<HTMLElement>("article > section");
     const track = section?.querySelector<HTMLElement>(
@@ -244,9 +321,10 @@ export default function Interactions() {
       md.removeEventListener("change", sync);
       reduced.removeEventListener("change", sync);
       cleanupRail?.();
+      cleanupLinks();
       cleanupReveal();
     };
-  }, []);
+  }, [router]);
 
   return null;
 }
