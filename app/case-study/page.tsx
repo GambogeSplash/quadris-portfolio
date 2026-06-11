@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { nextCaseStudy } from "./case-studies";
+import { PageTracker, MediaReveal } from "./nav";
 import "./case-study.css";
 
 export const metadata: Metadata = {
@@ -9,16 +11,52 @@ export const metadata: Metadata = {
 
 const B = "/work/patch";
 
+function ArrowLeft() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path
+        d="M7 3L2.5 8L7 13M3 8H13.5"
+        stroke="currentColor"
+        strokeWidth="1.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function ArrowRight() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path
+        d="M9 3L13.5 8L9 13M13 8H2.5"
+        stroke="currentColor"
+        strokeWidth="1.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export default function CaseStudy() {
+  const next = nextCaseStudy("patch");
+
   return (
     <div className="cs-page">
       <header className="cs-header">
-        <Link href="/">Quadri</Link>
+        <Link href="/" className="cs-back" aria-label="Back to home">
+          <ArrowLeft />
+          <span>Home</span>
+        </Link>
         <span style={{ color: "#969696" }}>Case Study</span>
       </header>
 
+      <PageTracker />
+      <MediaReveal />
+
       <main className="cs-body">
-        <section className="cs-title">
+        <section className="cs-title" id="overview">
           <h1>Patch</h1>
           <p className="cs-intro">
             Patch is a small silicone device you tap your phone against to lock
@@ -40,15 +78,12 @@ export default function CaseStudy() {
               <span>Shipped</span>
             </div>
           </div>
-        </section>
-
-        <section className="cs-section">
           <div className="cs-media">
             <img src={`${B}/patch-hero-1440.webp`} alt="Patch device on a desk" />
           </div>
         </section>
 
-        <section className="cs-section">
+        <section className="cs-section" id="product">
           <h2>Product</h2>
           <p>
             The object had to be friendly enough to live on a desk or a bedside
@@ -63,7 +98,7 @@ export default function CaseStudy() {
           </div>
         </section>
 
-        <section className="cs-section">
+        <section className="cs-section" id="identity">
           <h2>Identity</h2>
           <p>
             The mark is constructed from the same circle grid as the device, so
@@ -80,7 +115,7 @@ export default function CaseStudy() {
           </p>
         </section>
 
-        <section className="cs-section">
+        <section className="cs-section" id="app">
           <h2>App</h2>
           <p>
             The app stays out of the way. Lock states, timers, and widgets are
@@ -93,7 +128,7 @@ export default function CaseStudy() {
           </div>
         </section>
 
-        <section className="cs-section">
+        <section className="cs-section" id="campaign">
           <h2>Campaign</h2>
           <p>
             Out of home, the message stays plain: focus, made physical. Big
@@ -105,6 +140,24 @@ export default function CaseStudy() {
           </div>
         </section>
 
+        {next ? (
+          <Link href={next.href} className="cs-next">
+            <span className="cs-next-label">Next case study</span>
+            <span className="cs-next-title">
+              {next.title}
+              <ArrowRight />
+            </span>
+          </Link>
+        ) : (
+          <Link href="/" className="cs-next">
+            <span className="cs-next-label">More case studies coming</span>
+            <span className="cs-next-title">
+              Back to all work
+              <ArrowRight />
+            </span>
+          </Link>
+        )}
+
         <footer className="cs-footer">
           <p>
             Reference rebuild. Original design, photography, and film by{" "}
@@ -112,9 +165,6 @@ export default function CaseStudy() {
               System
             </a>
             . Replace this copy and imagery with your own work.
-          </p>
-          <p>
-            <Link href="/">Back to home</Link>
           </p>
         </footer>
       </main>
