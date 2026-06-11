@@ -1,6 +1,43 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { mountResolveCurtain } from "./resolve-curtain";
+
+// Desktop immersion layer for editorial pages: the site's own "resolve"
+// boundary. Media renders coarse at the top/bottom viewport edges and
+// sharpens as it travels inward, reacting to scroll speed. Native scroll
+// stays untouched.
+export function Immersion() {
+  useEffect(() => {
+    const column = document.querySelector<HTMLElement>(".cs-body");
+    if (!column) return;
+
+    let cleanupWarp: (() => void) | null = null;
+
+    const md = window.matchMedia("(min-width: 768px)");
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    const sync = () => {
+      const active = md.matches && !reduced.matches;
+      if (active && !cleanupWarp) {
+        cleanupWarp = mountResolveCurtain(column);
+      } else if (!active && cleanupWarp) {
+        cleanupWarp();
+        cleanupWarp = null;
+      }
+    };
+    sync();
+    md.addEventListener("change", sync);
+    reduced.addEventListener("change", sync);
+
+    return () => {
+      md.removeEventListener("change", sync);
+      reduced.removeEventListener("change", sync);
+      cleanupWarp?.();
+    };
+  }, []);
+  return null;
+}
 
 interface TrackerSection {
   id: string;

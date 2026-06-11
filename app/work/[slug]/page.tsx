@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CASE_STUDIES, getCaseStudy, nextCaseStudy } from "@/lib/case-studies";
 import { SiteHeader } from "@/components/site-header";
-import { PageTracker, MediaReveal } from "./nav";
+import { PageTracker, MediaReveal, Immersion } from "./nav";
 import "./case-study.css";
 
 export const dynamicParams = false;
@@ -55,6 +55,7 @@ export default async function CaseStudyPage({
 
       <PageTracker sections={study.sections.map(({ id, label }) => ({ id, label }))} />
       <MediaReveal />
+      <Immersion />
 
       <main className="cs-body">
         <section className="cs-title" id={study.sections[0]?.id ?? "overview"}>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Wordmark } from "./wordmark";
 
 function ArrowLeft() {
   return (
@@ -21,7 +22,9 @@ export function SiteHeader({ context }: { context?: string }) {
     <header className="cs-header">
       <Link href="/" className="cs-back" aria-label="Back to home">
         <ArrowLeft />
-        <span className="cs-wordmark">Quadri</span>
+        <span className="cs-wordmark">
+          <Wordmark />
+        </span>
       </Link>
       <nav className="cs-nav">
         {context ? <span className="cs-context">{context}</span> : null}

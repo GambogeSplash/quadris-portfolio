@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import "./signature.css";
 
 export const metadata: Metadata = {
   title: "Quadri Agboulaje, Product Designer",

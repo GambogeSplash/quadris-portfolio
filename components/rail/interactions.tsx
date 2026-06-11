@@ -7,13 +7,22 @@
  */
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { CASE_STUDIES } from "@/lib/case-studies";
 import { mountCurtain, applyRailTransform } from "./curtain";
 
-const CASE_STUDY_PATH = "/work/patch";
-
-// Media tiles link to the case study. A cursor-following label makes the
-// affordance explicit on desktop; on touch a plain tap navigates.
+// Media tiles spread across the case studies in rail order, so the rail acts
+// as the work index. A cursor-following label names the destination on
+// desktop; on touch a plain tap navigates.
 function setupTileLinks(root: HTMLElement, navigate: (path: string) => void) {
+  const anchors = [...root.querySelectorAll<HTMLElement>("[data-media-anchor]")];
+  const targetOf = new Map<HTMLElement, { href: string; title: string }>();
+  const per = Math.ceil(anchors.length / CASE_STUDIES.length);
+  anchors.forEach((anchor, i) => {
+    // Consecutive tiles group toward the same case study so a neighbourhood
+    // of the rail reads as one project.
+    const study = CASE_STUDIES[Math.min(Math.floor(i / per), CASE_STUDIES.length - 1)];
+    targetOf.set(anchor, { href: `/work/${study.slug}`, title: study.title });
+  });
   const pill = document.createElement("div");
   pill.textContent = "View case study";
   pill.style.cssText = [
@@ -44,7 +53,9 @@ function setupTileLinks(root: HTMLElement, navigate: (path: string) => void) {
     const grabbing = document.body.style.cursor === "grabbing";
     overTile = !!anchor && !grabbing;
     pill.style.opacity = overTile ? "1" : "0";
-    if (overTile) {
+    if (overTile && anchor) {
+      const target = targetOf.get(anchor);
+      if (target) pill.textContent = `View ${target.title}`;
       pill.style.transform = `translate3d(${e.clientX + 14}px, ${e.clientY + 14}px, 0)`;
     }
     if (anchor && !grabbing) anchor.style.cursor = "pointer";
@@ -59,6 +70,7 @@ function setupTileLinks(root: HTMLElement, navigate: (path: string) => void) {
     // A drag that travelled past the threshold should not read as a click.
     if (suppressNextClick) return;
     e.preventDefault();
+    const href = targetOf.get(anchor)?.href ?? `/work/${CASE_STUDIES[0].slug}`;
     // Tag only the clicked tile so the browser morphs it into the case
     // study hero during the view transition.
     anchor.style.viewTransitionName = "case-hero";
@@ -67,13 +79,13 @@ function setupTileLinks(root: HTMLElement, navigate: (path: string) => void) {
     };
     if (doc.startViewTransition) {
       doc.startViewTransition(() => {
-        navigate(CASE_STUDY_PATH);
+        navigate(href);
         // Give the router a beat to swap the DOM so the new hero is in the
         // snapshot; a prefetched static page lands well inside this window.
         return new Promise<void>((r) => setTimeout(r, 320));
       });
     } else {
-      navigate(CASE_STUDY_PATH);
+      navigate(href);
     }
   };
 
