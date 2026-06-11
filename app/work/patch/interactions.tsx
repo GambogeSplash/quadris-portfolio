@@ -10,6 +10,24 @@ import { mountCurtain, applyRailTransform } from "./curtain";
 
 const FADE = ["transition-opacity", "duration-300", "ease-out"];
 
+// Tiny pixelated placeholder shown while the full asset streams in, fading out on
+// arrival (mirrors the original's data-curtain-lqip layer). Injected only for media
+// that isn't ready at mount so cached loads never flash it.
+function injectLqip(anchor: HTMLElement): HTMLImageElement | null {
+  const src = anchor.dataset.mediaAnchor;
+  if (!src) return null;
+  const lqip = document.createElement("img");
+  lqip.src = src.replace(/\.[a-z0-9]+$/, "-lqip.webp");
+  lqip.alt = "";
+  lqip.setAttribute("aria-hidden", "true");
+  lqip.setAttribute("data-curtain-lqip", "true");
+  lqip.draggable = false;
+  lqip.className = `absolute inset-0 size-full object-cover ${FADE.join(" ")}`;
+  lqip.style.imageRendering = "pixelated";
+  anchor.prepend(lqip);
+  return lqip;
+}
+
 // Reveal media that loads after mount with a 300ms fade; anything already decoded
 // (cache hits) appears instantly so a warm load doesn't flicker.
 function setupMediaReveal(root: HTMLElement) {
@@ -26,17 +44,22 @@ function setupMediaReveal(root: HTMLElement) {
       continue;
     }
     let settled = false;
+    let lqip: HTMLImageElement | null = null;
     const raf = requestAnimationFrame(() => {
       if (settled) return;
       if (img.complete && img.naturalWidth > 0) {
         settled = true;
         reveal(false);
+        return;
       }
+      const anchor = img.closest<HTMLElement>("[data-media-anchor]");
+      if (anchor) lqip = injectLqip(anchor);
     });
     const onLoad = () => {
       if (!settled) {
         settled = true;
         reveal(true);
+        lqip?.classList.add("opacity-0");
       }
     };
     img.addEventListener("load", onLoad, { once: true });
@@ -55,7 +78,13 @@ function setupMediaReveal(root: HTMLElement) {
       if (video.readyState >= 3) {
         reveal(false);
       } else {
-        const onCanPlay = () => reveal(true);
+        let lqip: HTMLImageElement | null = null;
+        const anchor = video.closest<HTMLElement>("[data-media-anchor]");
+        if (anchor) lqip = injectLqip(anchor);
+        const onCanPlay = () => {
+          reveal(true);
+          lqip?.classList.add("opacity-0");
+        };
         video.addEventListener("canplay", onCanPlay, { once: true });
         cleanups.push(() => video.removeEventListener("canplay", onCanPlay));
       }
