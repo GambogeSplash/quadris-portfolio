@@ -31,6 +31,51 @@
   letter-spacing: -0.02em;
 }
 
+.cs-nav {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.cs-nav a:hover {
+  color: #969696;
+}
+
+.cs-context {
+  color: #969696;
+}
+
+/* Artefact slot shown until real work replaces it */
+.cs-placeholder {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  background: #f2f2f2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  text-align: center;
+}
+
+.cs-placeholder span {
+  color: #969696;
+  max-width: 288px;
+  text-wrap: balance;
+}
+
+/* Shared element: the clicked rail tile morphs into this hero */
+.cs-hero {
+  view-transition-name: case-hero;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
 /* Right-side section tracker */
 .cs-tracker {
   display: none;

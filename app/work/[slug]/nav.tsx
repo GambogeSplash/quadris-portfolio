@@ -1,11 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { SECTIONS } from "./case-studies";
+
+interface TrackerSection {
+  id: string;
+  label: string;
+}
 
 // Right-side section tracker: highlights the section in view, click to jump.
-export function PageTracker() {
-  const [active, setActive] = useState(SECTIONS[0].id);
+export function PageTracker({ sections }: { sections: TrackerSection[] }) {
+  const [active, setActive] = useState(sections[0]?.id);
 
   useEffect(() => {
     const io = new IntersectionObserver(
@@ -17,16 +21,16 @@ export function PageTracker() {
       // A band around the upper third of the viewport decides the active section.
       { rootMargin: "-30% 0px -60% 0px" },
     );
-    for (const s of SECTIONS) {
+    for (const s of sections) {
       const el = document.getElementById(s.id);
       if (el) io.observe(el);
     }
     return () => io.disconnect();
-  }, []);
+  }, [sections]);
 
   return (
     <nav className="cs-tracker" aria-label="Sections">
-      {SECTIONS.map((s) => (
+      {sections.map((s) => (
         <button
           key={s.id}
           className={active === s.id ? "is-active" : ""}

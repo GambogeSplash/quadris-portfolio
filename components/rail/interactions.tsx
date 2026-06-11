@@ -9,7 +9,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { mountCurtain, applyRailTransform } from "./curtain";
 
-const CASE_STUDY_PATH = "/case-study";
+const CASE_STUDY_PATH = "/work/patch";
 
 // Media tiles link to the case study. A cursor-following label makes the
 // affordance explicit on desktop; on touch a plain tap navigates.
@@ -59,7 +59,22 @@ function setupTileLinks(root: HTMLElement, navigate: (path: string) => void) {
     // A drag that travelled past the threshold should not read as a click.
     if (suppressNextClick) return;
     e.preventDefault();
-    navigate(CASE_STUDY_PATH);
+    // Tag only the clicked tile so the browser morphs it into the case
+    // study hero during the view transition.
+    anchor.style.viewTransitionName = "case-hero";
+    const doc = document as Document & {
+      startViewTransition?: (cb: () => Promise<void>) => void;
+    };
+    if (doc.startViewTransition) {
+      doc.startViewTransition(() => {
+        navigate(CASE_STUDY_PATH);
+        // Give the router a beat to swap the DOM so the new hero is in the
+        // snapshot; a prefetched static page lands well inside this window.
+        return new Promise<void>((r) => setTimeout(r, 320));
+      });
+    } else {
+      navigate(CASE_STUDY_PATH);
+    }
   };
 
   window.addEventListener("pointermove", onMove, { passive: true });
