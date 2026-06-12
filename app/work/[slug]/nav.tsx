@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { mountResolveCurtain } from "./resolve-curtain";
+import { mountWarpCurtain } from "./warp-curtain";
 
-// Desktop immersion layer for editorial pages: the site's own "resolve"
-// boundary. Media renders coarse at the top/bottom viewport edges and
-// sharpens as it travels inward, reacting to scroll speed. Native scroll
-// stays untouched.
+// Desktop immersion layer for editorial pages: the rail's lens physics
+// rotated vertical. Media flares from the column centerline and disperses as
+// it crosses the top/bottom viewport edges. Native scroll stays untouched.
+// Alternative signature available in ./resolve-curtain.ts (swap the import).
 export function Immersion() {
   useEffect(() => {
     const column = document.querySelector<HTMLElement>(".cs-body");
@@ -20,7 +20,7 @@ export function Immersion() {
     const sync = () => {
       const active = md.matches && !reduced.matches;
       if (active && !cleanupWarp) {
-        cleanupWarp = mountResolveCurtain(column);
+        cleanupWarp = mountWarpCurtain(column);
       } else if (!active && cleanupWarp) {
         cleanupWarp();
         cleanupWarp = null;
